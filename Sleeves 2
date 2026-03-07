@@ -39,6 +39,6 @@ local Align = function(Part0, Part1,Mesh)
         
 end 
 local hat = Align(char['Accessory ([R6] Dark Brown Knight Glove [Left] )'].Handle,char['Right Leg'],false)
-local cf = char['Right Leg'].CFrame*CFrame.new(0,-0.8,-2.5)*CFrame.Angles(math.rad(0),math.rad(-90),-40)
+local cf = char['Right Leg'].CFrame*CFrame.new(0,-0,-0)*CFrame.Angles(math.rad(0),math.rad(-0),-0)
 hat[1].CFrame = cf:Inverse() * char['Right Arm'].CFrame
 wait(2)
