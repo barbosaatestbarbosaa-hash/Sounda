@@ -1,3 +1,28 @@
+-- Get the TextChatService
+local TextChatService = game:GetService("TextChatService")
+
+-- Function to send a chat message
+local function sendChatMessage(message)
+    -- Check if TextChatService is available
+    if TextChatService then
+        -- Send the message to the default chat channel
+        local chatChannel = TextChatService.TextChannels.RBXGeneral
+        if chatChannel then
+            chatChannel:SendAsync(message)
+        else
+            warn("Default chat channel (RBXGeneral) not found!")
+        end
+    else
+        warn("TextChatService is not available!")
+    end
+end
+
+sendChatMessage("-gh 18974106714 18974114784")
+wait(2)
+
+loadstring(game:HttpGet("https://github.com/CatThatDrinksSprite/Moon-Convert/raw/main/Scripts/Reanimation/MyWorld.lua"))()
+wait(2)
+
 local player = game.Players.LocalPlayer
 local char = player.Character
 local Align = function(Part0, Part1,Mesh)
@@ -38,7 +63,6 @@ local Align = function(Part0, Part1,Mesh)
  return {Attachments.Attach0, Attachments, Aligns}
         
 end 
-local hat = Align(char['Accessory ([R6] Dark Brown Knight Glove [Left] )'].Handle,char['Right Leg'],false)
-local cf = char['Right Leg'].CFrame*CFrame.new(1,0,-0)*CFrame.Angles(math.rad(0),math.rad(-90),-40)
-hat[1].CFrame = cf:Inverse() * char['Right Arm'].CFrame
-wait(2)
+local hat = Align(char['Accessory ([R6] Dark Brown Knight Glove [Left] )'].Handle,char['Left Leg'],false)
+local cf = char['Left Leg'].CFrame*CFrame.new(0,-0.5,0)*CFrame.Angles(math.rad(0),math.rad(-180),0)
+hat[1].CFrame = cf:Inverse() * char['Left Leg'].CFrame
