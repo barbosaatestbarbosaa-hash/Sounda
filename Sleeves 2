@@ -1,28 +1,3 @@
--- Get the TextChatService
-local TextChatService = game:GetService("TextChatService")
-
--- Function to send a chat message
-local function sendChatMessage(message)
-    -- Check if TextChatService is available
-    if TextChatService then
-        -- Send the message to the default chat channel
-        local chatChannel = TextChatService.TextChannels.RBXGeneral
-        if chatChannel then
-            chatChannel:SendAsync(message)
-        else
-            warn("Default chat channel (RBXGeneral) not found!")
-        end
-    else
-        warn("TextChatService is not available!")
-    end
-end
-
-sendChatMessage("-gh 18974106714 18974114784")
-wait(2)
-
-loadstring(game:HttpGet("https://github.com/CatThatDrinksSprite/Moon-Convert/raw/main/Scripts/Reanimation/MyWorld.lua"))()
-wait(2)
-
 local player = game.Players.LocalPlayer
 local char = player.Character
 local Align = function(Part0, Part1,Mesh)
