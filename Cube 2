@@ -14,13 +14,13 @@ local function setupCharacter(character)
     for _, acc in ipairs(character:GetChildren()) do
         if acc:IsA("Accessory") then
             local n = acc.Name:lower()
-            if n:find("selected") then
+            if n:find("innercube") then
                 selectedAcc = acc
             elseif n:find("hacklord") then
                 hacklordAcc = acc
             elseif n:find("text_small") then
                 textAcc = acc
-            elseif n:find("icecube2") then
+            elseif n:find("outercubeoutline") then
                 icecube2Acc = acc
             end
         end
