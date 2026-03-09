@@ -14,13 +14,13 @@ local function setupCharacter(character)
     for _, acc in ipairs(character:GetChildren()) do
         if acc:IsA("Accessory") then
             local n = acc.Name:lower()
-            if n:find("innercube") then
+            if n:find("selected") then
                 selectedAcc = acc
             elseif n:find("hacklord") then
                 hacklordAcc = acc
             elseif n:find("text_small") then
                 textAcc = acc
-            elseif n:find("outercubeoutline") then
+            elseif n:find("icecube2") then
                 icecube2Acc = acc
             end
         end
@@ -41,6 +41,192 @@ local function setupCharacter(character)
     cube2:BreakJoints()
 
     cube.Anchored = true
+    hack.Anchored = true
+    text.Anchored = true
+    cube2.Anchored = true
+
+    cube.CanCollide = false
+    hack.CanCollide = false
+    text.CanCollide = false
+    cube2.CanCollide = false
+
+    local t = 0
+    local cubeCF = cube.CFrame
+    local cube2CF = cube2.CFrame
+    local hackCF = hack.CFrame
+
+    local state = "normal"
+    local glitchStart = 0
+    local reactionTimer = 0
+    local cooldownEnd = 0
+    local triggerPlayer = nil
+
+    local function onTouch(hit)
+        local char = hit.Parent
+        if char and char:FindFirstChild("Humanoid") then
+            local plr = Players:GetPlayerFromCharacter(char)
+            if plr and plr ~= player and os.clock() > cooldownEnd then
+                state = "glitch"
+                glitchStart = os.clock()
+                cooldownEnd = os.clock() + 10
+                triggerPlayer = plr
+            end
+        end
+    end
+
+    cube.Touched:Connect(onTouch)
+    cube2.Touched:Connect(onTouch)
+
+    local connection
+    connection = RunService.Heartbeat:Connect(function(dt)
+        if not character.Parent then
+            if connection then
+                connection:Disconnect()
+            end
+            return
+        end
+
+        t += dt
+
+        -- posição fixa ao lado do player, mais junto
+        local base =
+            rootPart.Position +
+            rootPart.CFrame.RightVector * 3 +
+            Vector3.new(0, 2, 0)
+
+        -- flutuação suave
+        local float = math.sin(t * 2) * 0.8
+        local pos = base + Vector3.new(0, float, 0)
+
+        local nearestPlayer
+        local nearestDist = 16
+
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local dist =
+                    (plr.Character.HumanoidRootPart.Position - pos).Magnitude
+
+                if dist < nearestDist then
+                    nearestDist = dist
+                    nearestPlayer = plr
+                end
+            end
+        end
+
+        local rx = math.sin(t * 1.5) * 1.5
+        local ry = math.sin(t * 1.2) * 2
+        local rz = math.sin(t * 1.8) * 1.3
+
+        local targetCube = CFrame.new(pos) * CFrame.Angles(rx, ry, rz)
+        local targetCube2 = CFrame.new(pos) * CFrame.Angles(-rx, -ry, -rz)
+
+        local targetHack
+        local textTarget
+
+        if nearestPlayer then
+            local targetPos = nearestPlayer.Character.HumanoidRootPart.Position
+            targetHack = CFrame.new(pos, targetPos) * CFrame.Angles(0, math.rad(180), 0)
+            textTarget = CFrame.new(pos + Vector3.new(0, 1.5, 0), targetPos)
+        else
+            targetHack = CFrame.new(pos) * CFrame.Angles(0, math.sin(t) * 1.5, 0)
+            textTarget = CFrame.new(pos + Vector3.new(0, -25, 0))
+        end
+
+        if state == "glitch" then
+            if os.clock() - glitchStart > 1 then
+                state = "reaction"
+                reactionTimer = 0
+            else
+                -- glitch: random pos and rot
+                local offset = Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
+                local glitchPos = base + offset
+                local glitchRx = math.random() * 2 * math.pi - math.pi
+                local glitchRy = math.random() * 2 * math.pi - math.pi
+                local glitchRz = math.random() * 2 * math.pi - math.pi
+
+                cube.CFrame = CFrame.new(glitchPos) * CFrame.Angles(glitchRx, glitchRy, glitchRz)
+                cube2.CFrame = CFrame.new(glitchPos) * CFrame.Angles(-glitchRx, -glitchRy, -glitchRz)
+                hack.CFrame = CFrame.new(glitchPos) * CFrame.Angles(glitchRx, glitchRy, glitchRz)
+                text.CFrame = CFrame.new(glitchPos + Vector3.new(0, 1.5, 0))
+
+                cubeCF = cube.CFrame
+                cube2CF = cube2.CFrame
+                hackCF = hack.CFrame
+
+                return
+            end
+        elseif state == "reaction" then
+            reactionTimer += dt
+
+            -- cubes stop spinning
+            targetCube = CFrame.new(pos)
+            targetCube2 = CFrame.new(pos)
+
+            -- hacklord animation
+            local lookTarget = triggerPlayer and triggerPlayer.Character and triggerPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local lookPos = lookTarget and lookTarget.Position or pos + rootPart.CFrame.LookVector
+
+            if reactionTimer < 0.5 then
+                -- look left
+                targetHack = CFrame.new(pos, lookPos) * CFrame.Angles(0, math.rad(180 + 45), 0)
+            elseif reactionTimer < 1 then
+                -- look right
+                targetHack = CFrame.new(pos, lookPos) * CFrame.Angles(0, math.rad(180 - 45), 0)
+            elseif reactionTimer < 1.5 then
+                -- look at player
+                targetHack = CFrame.new(pos, lookPos) * CFrame.Angles(0, math.rad(180), 0)
+            elseif reactionTimer < 3 then
+                -- shake no: oscillate
+                local shakeT = (reactionTimer - 1.5) * 4 -- frequency for ~3 shakes in 1.5 sec
+                local phase = math.sin(shakeT * math.pi) * math.rad(20)
+                targetHack = CFrame.new(pos, lookPos) * CFrame.Angles(0, math.rad(180) + phase, 0)
+            else
+                state = "normal"
+            end
+
+            textTarget = CFrame.new(pos + Vector3.new(0, 1.5, 0), lookPos)
+        end
+
+        -- default to normal
+        cubeCF = cubeCF:Lerp(targetCube, 0.15)
+        cube.CFrame = cubeCF
+
+        cube2CF = cube2CF:Lerp(targetCube2, 0.15)
+        cube2.CFrame = cube2CF
+
+        hackCF = hackCF:Lerp(targetHack, 0.1)
+        hack.CFrame = hackCF
+
+        text.CFrame = textTarget
+    end)
+end
+
+if player.Character then
+    setupCharacter(player.Character)
+end
+
+player.CharacterAdded:Connect(setupCharacter)
+wait(7)
+-- Get the TextChatService
+local TextChatService = game:GetService("TextChatService")
+
+-- Function to send a chat message
+local function sendChatMessage(message)
+    -- Check if TextChatService is available
+    if TextChatService then
+        -- Send the message to the default chat channel
+        local chatChannel = TextChatService.TextChannels.RBXGeneral
+        if chatChannel then
+            chatChannel:SendAsync(message)
+        else
+            warn("Default chat channel (RBXGeneral) not found!")
+        end
+    else
+        warn("TextChatService is not available!")
+    end
+end
+
+sendChatMessage("-gh 12731793844 17331685804 90407054994004 135335415752011")    cube.Anchored = true
     hack.Anchored = true
     text.Anchored = true
     cube2.Anchored = true
