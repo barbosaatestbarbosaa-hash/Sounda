@@ -23,13 +23,13 @@ local method = 3 --reanimation method
 --3 - limbs + breakJoints after [loadtime] seconds
 --4 - remove humanoid + breakJoints
 --5 - remove humanoid + limbs
-local alignmode = 4 --AlignPosition mode
+local alignmode = 1 --AlignPosition mode
 --modes:
 --1 - AlignPosition rigidity enabled true
 --2 - 2 AlignPositions rigidity enabled both true and false
 --3 - AlignPosition rigidity enabled false
 --4 - no AlignPosition, CFrame only
-local flingpart = "HumanoidRootPart" --name of the part or the hat used for flinging
+local flingpart = "" --name of the part or the hat used for flinging
 --the fling function
 --usage: fling(target, duration, velocity)
 --target can be set to: basePart, CFrame, Vector3, character model or humanoid (flings at mouse.Hit if argument not provided)
