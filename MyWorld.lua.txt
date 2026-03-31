@@ -870,7 +870,7 @@ if flingpart0 and flingpart1 then
 
     task.wait(loadtime)
 
-    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("-net")
+    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("")
 end
 
 lp:GetMouse().Button1Down:Connect(fling) --click fling
