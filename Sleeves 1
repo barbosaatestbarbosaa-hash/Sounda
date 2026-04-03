@@ -38,6 +38,6 @@ local Align = function(Part0, Part1,Mesh)
  return {Attachments.Attach0, Attachments, Aligns}
         
 end 
-local hat = Align(char['Accessory (CoatRAccessory)'].Handle,char['Right Leg'],false)
-local cf = char['Right Leg'].CFrame*CFrame.new(0,0,0)*CFrame.Angles(math.rad(0),math.rad(-180),0)
+local hat = Align(char['Accessory (default)'].Handle,char['Right Leg'],false)
+local cf = char['Right Leg'].CFrame*CFrame.new(0,0.3,0)*CFrame.Angles(math.rad(0),math.rad(-180),0)
 hat[1].CFrame = cf:Inverse() * char['Right Leg'].CFrame
