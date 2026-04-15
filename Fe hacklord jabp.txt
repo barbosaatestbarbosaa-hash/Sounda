@@ -17,13 +17,13 @@ local function sendChatMessage(message)
     end
 end
 
-sendChatMessage("-gh 106895658225908 84452359312672 110417854751822 18999927321 133494382216113 75253928472062 92446832636929 85553268095223")
+sendChatMessage("-gh 106895658225908 110417854751822 18999927321 133494382216113 75253928472062 92446832636929 85553268095223")
 wait(6)
-sendChatMessage("-gh 18974150883 18974146513 18974150883 18974146513 129869875355653")
+sendChatMessage("-gh 18974150883 18974146513 18974150883 18974146513123299565162837 129869875355653")
 wait(6)
-sendChatMessage("-gh 123299565162837 79978519124159 17650507297012 129869875355653")
+sendChatMessage("-gh 123299565162837 79978519124159 17650507297012 129869875355653 117650507297012")
 wait(6)
-sendChatMessage("-gh 106771820614777 84552051930287 106301974718164 103391304453713 72215140956811 86681862003590")
+sendChatMessage("-gh 106771820614777 84552051930287 106301974718164")
 wait(6)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Cube%204"))()
 wait(5)
@@ -1112,7 +1112,7 @@ local Align = function(Part0, Part1,Mesh)
  return {Attachments.Attach0, Attachments, Aligns}
         
 end 
-local hat = Align(char['Accessory (defaultAcessory)1'].Handle,char['Head'],false)
+local hat = Align(char['Accessory (default)'].Handle,char['Head'],false)
 local cf = char['Head'].CFrame*CFrame.new(0.05,0.8,0.06)*CFrame.Angles(math.rad(0),math.rad(180),0)
 hat[1].CFrame = cf:Inverse() * char['Head'].CFrame
 
@@ -1205,6 +1205,8 @@ end
 local hat = Align(char['Accessory (MeshPartAccessory)2'].Handle,char['Head'],false)
 local cf = char['Head'].CFrame*CFrame.new(0,0.6,0)*CFrame.Angles(math.rad(0),math.rad(0),0)
 hat[1].CFrame = cf:Inverse() * char['Head'].CFrame
+
+
 -- Remade by tibe0124
 -- Subscribe tibe_D4RK :>
 
