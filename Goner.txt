@@ -39,8 +39,8 @@ task.spawn(function()
     local accessoryName = "GonerSword"        -- Nome exato do Accessory
     local targetPath = workspace.Luacodescripteroblox.Goner.Sword  -- Alvo no workspace
     
-    local POSITION_OFFSET = Vector3.new(0, -0.5, -0.5)   -- Ajuste aqui (X, Y, Z)
-    local ROTATION_OFFSET = Vector3.new(-110, 0, 90)  -- Ajuste aqui em graus (X, Y, Z)
+    local POSITION_OFFSET = Vector3.new(0, -0.5, -0.1)   -- Ajuste aqui (X, Y, Z)
+    local ROTATION_OFFSET = Vector3.new(-98, -30, 80)  -- Ajuste aqui em graus (X, Y, Z)
     -- ========================================================
 
     -- Procura o Accessory no personagem
