@@ -1125,12 +1125,12 @@ local hat = Align(char['Accessory (Meshes/1 (574)Accessory)'].Handle,char['Torso
 spawn(function()
     while _G.loop do
         local part0 = char['Accessory (Meshes/1 (574)Accessory)'].Handle
-        local target = char['Accessory (ironmaiden)'].Handle
+        local target = char['Accessory (Coffin)'].Handle
 
         local dir = (target.Position - part0.Position)
         local angleY = math.atan2(dir.X, dir.Z)
 
-        hat[1].Attach0.CFrame = CFrame.Angles(0, angleY, 0)
+        hat[1].Attach0.Orientation = Vector3.new(0, math.deg(angleY) + 106, 0)
 
         wait()
     end
