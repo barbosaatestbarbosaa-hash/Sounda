@@ -919,49 +919,54 @@ end
 makeInvisible(reanimateFolder:FindFirstChild("ErlkingCoffinChains"))
 makeInvisible(reanimateFolder:FindFirstChild("Coffin"))
 
-local player = game.Players.LocalPlayer
-local char = player.Character
-local Align = function(Part0, Part1,Mesh)
-    local Aligns = {
-        AlignOrientation = Instance.new("AlignOrientation", Part0),
-        AlignPosition = Instance.new("AlignPosition", Part0)
-    }
+task.spawn(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
     
-    local Attachments = {
-        Attach0 = Instance.new("Attachment", Part0),
-        Attach1 = Instance.new("Attachment", Part1)
-    }
-    local m = Part0:FindFirstChildOfClass('SpecialMesh')--This will get the first "SpecialMesh" it finds if it does not find any, then it will return nil
-    if Mesh and m then --If Mesh is set to true and it finds a mesh it will destroy it
-        m:Destroy()
+    task.wait(2)
+
+    local targetPart = character:FindFirstChild("HaxxedBladeR2", true)
+    local swordAcc = character:FindFirstChild("Accessory (Meshes/1x1x1x1 SwordAccessory)")
+
+    if not targetPart or not swordAcc then return end
+
+    local handle = swordAcc:FindFirstChild("Handle") or swordAcc:FindFirstChildWhichIsA("BasePart")
+    if not handle then return end
+
+    handle:BreakJoints()
+    for _, v in ipairs(handle:GetChildren()) do
+        if v:IsA("Weld") or v:IsA("Motor6D") or v:IsA("WeldConstraint") then
+            v:Destroy()
+        end
     end
-    Part0:BreakJoints()
-    Aligns.AlignOrientation.Attachment0 = Attachments.Attach0
-    Aligns.AlignOrientation.Attachment1 = Attachments.Attach1
-    Aligns.AlignOrientation.Responsiveness = math.huge
-    Aligns.AlignOrientation.RigidityEnabled = true
-    
-    Aligns.AlignPosition.Attachment0 = Attachments.Attach0
-    Aligns.AlignPosition.Attachment1 = Attachments.Attach1
-    Aligns.AlignPosition.Responsiveness = math.huge
-    Aligns.AlignPosition.RigidityEnabled = true
-        Aligns.AlignPosition.MaxForce = 999999999
-        spawn(function()
-            while _G.loop do 
-                local mag = (Part0.Position - (Part1.CFrame*Attachments.Attach0.CFrame:Inverse()).p).magnitude--magnitude can get the distance between two cframe or position
-                if mag >= 5 then 
-                Part0.CFrame = Part1.CFrame*Attachments.Attach0.CFrame:Inverse()
-                end
-                Part0.Velocity = Vector3.new(0,35,0)
-                game['Run Service'].Heartbeat:wait()
-                end
-        end)
- return {Attachments.Attach0, Attachments, Aligns}
-        
-end 
-local hat = Align(char['Accessory (Meshes/1x1x1x1 SwordAccessory)'].Handle,char['Right Arm'],false)
-local cf = char['Right Arm'].CFrame*CFrame.new(0,-0.8,-2.5)*CFrame.Angles(math.rad(0),math.rad(-90),-40)
-hat[1].CFrame = cf:Inverse() * char['Right Arm'].CFrame
+
+    handle.Anchored = false
+    handle.CanCollide = false
+    handle.Massless = true
+
+    -- OFFSET CORRETO
+    local myOffset = CFrame.new(0, 0, 1.3) * CFrame.Angles(math.rad(180), math.rad(90), math.rad(40))
+
+    -- ALIGN (MESMO SISTEMA, MAS CORRETO)
+    local att0 = Instance.new("Attachment", handle)
+    local att1 = Instance.new("Attachment", targetPart)
+
+    -- 🔥 AQUI É O SEGREDO
+    att1.CFrame = myOffset
+
+    local alignPos = Instance.new("AlignPosition", handle)
+    alignPos.Attachment0 = att0
+    alignPos.Attachment1 = att1
+    alignPos.MaxForce = 999999999
+    alignPos.Responsiveness = math.huge
+    alignPos.RigidityEnabled = true
+
+    local alignOri = Instance.new("AlignOrientation", handle)
+    alignOri.Attachment0 = att0
+    alignOri.Attachment1 = att1
+    alignOri.Responsiveness = math.huge
+    alignOri.RigidityEnabled = true
+end)
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Universal-Script-head-movement-2803.txt"))()
 
