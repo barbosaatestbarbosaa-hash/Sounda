@@ -23,7 +23,7 @@ sendChatMessage("-gh 18974150883 18974146513 18974150883 18974146513123299565162
 wait(6)
 sendChatMessage("-gh 123299565162837 79978519124159 17650507297012 129869875355653 117650507297012")
 wait(6)
-sendChatMessage("-gh 106771820614777 84552051930287 106301974718164")
+sendChatMessage("-gh 106771820614777 84552051930287 106301974718164 125895225186271")
 wait(6)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Cube%204"))()
 wait(5)
@@ -919,6 +919,55 @@ end
 makeInvisible(reanimateFolder:FindFirstChild("ErlkingCoffinChains"))
 makeInvisible(reanimateFolder:FindFirstChild("Coffin"))
 
+task.spawn(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    task.wait(2)
+
+    local targetPart = character:FindFirstChild("HaxxedBladeR2", true)
+    local swordAcc = character:FindFirstChild("Accessory (Meshes/1x1x1x1 SwordAccessory)")
+
+    if not targetPart or not swordAcc then return end
+
+    local handle = swordAcc:FindFirstChild("Handle") or swordAcc:FindFirstChildWhichIsA("BasePart")
+    if not handle then return end
+
+    handle:BreakJoints()
+    for _, v in ipairs(handle:GetChildren()) do
+        if v:IsA("Weld") or v:IsA("Motor6D") or v:IsA("WeldConstraint") then
+            v:Destroy()
+        end
+    end
+
+    handle.Anchored = false
+    handle.CanCollide = false
+    handle.Massless = true
+
+    -- OFFSET CORRETO
+    local myOffset = CFrame.new(0, 0, 1.3) * CFrame.Angles(math.rad(90), math.rad(180), math.rad(140))
+
+    -- ALIGN (MESMO SISTEMA, MAS CORRETO)
+    local att0 = Instance.new("Attachment", handle)
+    local att1 = Instance.new("Attachment", targetPart)
+
+    -- 🔥 AQUI É O SEGREDO
+    att1.CFrame = myOffset
+
+    local alignPos = Instance.new("AlignPosition", handle)
+    alignPos.Attachment0 = att0
+    alignPos.Attachment1 = att1
+    alignPos.MaxForce = 999999999
+    alignPos.Responsiveness = math.huge
+    alignPos.RigidityEnabled = true
+
+    local alignOri = Instance.new("AlignOrientation", handle)
+    alignOri.Attachment0 = att0
+    alignOri.Attachment1 = att1
+    alignOri.Responsiveness = math.huge
+    alignOri.RigidityEnabled = true
+end)
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Universal-Script-head-movement-2803.txt"))()
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Sleeves%201.txt"))()
@@ -1214,14 +1263,14 @@ local hat = Align(
 )
 
 -- CONFIG
-local rotationSpeed = 6 -- você pode editar aqui depois
+local rotationSpeed = 10 -- você pode editar aqui depois
 local angle = 0
 
 game:GetService("RunService").RenderStepped:Connect(function(dt)
     angle = angle + rotationSpeed
 
     local baseCF =
-        CFrame.new(0,0.7,0) *
+        CFrame.new(0,0.8,0) *
         CFrame.Angles(math.rad(150), math.rad(angle), 0)
 
     hat[1].CFrame = baseCF
