@@ -945,7 +945,7 @@ task.spawn(function()
     handle.Massless = true
 
     -- OFFSET CORRETO
-    local myOffset = CFrame.new(0, 0, 1.3) * CFrame.Angles(math.rad(90), math.rad(180), math.rad(140))
+    local myOffset = CFrame.new(0, 0, 1.8) * CFrame.Angles(math.rad(90), math.rad(180), math.rad(140))
 
     -- ALIGN (MESMO SISTEMA, MAS CORRETO)
     local att0 = Instance.new("Attachment", handle)
