@@ -18,17 +18,81 @@ local function sendChatMessage(message)
 end
 
 sendChatMessage("-gh 106895658225908 110417854751822 18999927321 133494382216113 75253928472062 92446832636929 85553268095223")
-wait(6)
+wait(5)
 sendChatMessage("-gh 18974150883 18974146513 18974150883 18974146513123299565162837 129869875355653")
-wait(6)
-sendChatMessage("-gh 123299565162837 79978519124159 17650507297012 129869875355653 117650507297012")
-wait(6)
+wait(5)
+sendChatMessage("-gh 123299565162837 79978519124159 17650507297012 129869875355653")
+wait(5)
 sendChatMessage("-gh 106771820614777 84552051930287 106301974718164 125895225186271")
-wait(6)
+wait(5)
+sendChatMessage("-gh 92244212710872")
+wait(3)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/barbosaatestbarbosaa-hash/Sounda/refs/heads/main/Cube%204"))()
 wait(5)
 sendChatMessage("-pd")
 sendChatMessage("-net")
+
+task.spawn(function()
+
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local head = char:WaitForChild("Head")
+
+    -- Attachment eye
+    local eye = head:FindFirstChild("eye")
+    if not eye then
+        eye = Instance.new("Attachment")
+        eye.Name = "eye"
+        eye.Position = Vector3.new(0.2, 0.15, -0.4)   -- posição que você pediu
+        eye.Parent = head
+    end
+
+    -- Particle Emitter
+    local p = eye:FindFirstChild("EyeParticle") or Instance.new("ParticleEmitter")
+    p.Name = "EyeParticle"
+    p.Parent = eye
+
+    p.Enabled = true
+    p.Texture = "rbxassetid://91738358357977"
+    p.Rate = 20
+
+    p.Lifetime = NumberRange.new(0.5, 0.5)
+    p.Speed = NumberRange.new(1.5, 1.5)
+    p.SpreadAngle = Vector2.new(0, 0)
+
+    p.Rotation = NumberRange.new(-90, -90)
+    p.RotSpeed = NumberRange.new(0, 0)
+
+    p.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.5, 0.875),
+        NumberSequenceKeypoint.new(1, 0)
+    })
+
+    p.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+
+    p.Color = ColorSequence.new(Color3.new(1, 0.04855, 0.12312))
+
+    p.LightEmission = 0
+    p.Brightness = 10
+    p.ZOffset = 0.5
+    p.Drag = 0
+    p.Acceleration = Vector3.new(0, 0, 6.5)
+
+    p.EmissionDirection = Enum.NormalId.Right
+    p.LockedToPart = true
+    p.Orientation = Enum.ParticleOrientation.VelocityParallel
+
+    -- Flipbook
+    p.FlipbookLayout = Enum.ParticleFlipbookLayout.Grid4x4
+    p.FlipbookMode = Enum.ParticleFlipbookMode.Loop
+    p.FlipbookFramerate = NumberRange.new(22.5, 22.5)
+    p.FlipbookStartRandom = true
+
+end)
 
 loadstring(game:HttpGet("https://pastefy.app/5Vq2C3Te/raw"))()
 
@@ -945,7 +1009,7 @@ task.spawn(function()
     handle.Massless = true
 
     -- OFFSET CORRETO
-    local myOffset = CFrame.new(0, 0, 1.8) * CFrame.Angles(math.rad(90), math.rad(180), math.rad(140))
+    local myOffset = CFrame.new(0, 0, 1.3) * CFrame.Angles(math.rad(90), math.rad(180), math.rad(135))
 
     -- ALIGN (MESMO SISTEMA, MAS CORRETO)
     local att0 = Instance.new("Attachment", handle)
@@ -1270,7 +1334,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
     angle = angle + rotationSpeed
 
     local baseCF =
-        CFrame.new(0,0.8,0) *
+        CFrame.new(0,0.7,0) *
         CFrame.Angles(math.rad(150), math.rad(angle), 0)
 
     hat[1].CFrame = baseCF
@@ -1384,87 +1448,537 @@ ContextActionService:SetPosition("Shift Lock", UDim2.new(0.8, 0, 0.8, 0))
 -- Script Limpo: Remove efeitos específicos do GelatekReanimate + Personagem
 -- Delta Executor
 
-local player = game.Players.LocalPlayer
+local char = workspace.GelatekReanimate
 
-local function cleanModel(model)
-    if not model then return end
-    
-    -- Remove efeitos da Head (sem remover o Attachment)
-    local head = model:FindFirstChild("Head")
-    if head then
-        if head:FindFirstChild("Eyes") then head.Eyes:Destroy() end
-        if head:FindFirstChild("RightEye") then head.RightEye:Destroy() end
-        if head:FindFirstChild("LeftEye") then head.LeftEye:Destroy() end
-        
-        -- Remove ParticleEmitter e Skull dentro do Attachment (sem destruir o Attachment)
-        local attachment = head:FindFirstChild("Attachment")
-        if attachment then
-            if attachment:FindFirstChild("ParticleEmitter") then
-                attachment.ParticleEmitter:Destroy()
-            end
-            if attachment:FindFirstChild("Skull") then
-                attachment.Skull:Destroy()
-            end
-        end
+
+
+-- Função para deixar invisível
+
+local function makeInvisible(obj)
+
+    if obj and obj:IsA("BasePart") then
+
+        obj.Transparency = 1
+
     end
-    
-    -- Remove a espada
-    if model:FindFirstChild("Meshes/Sword_03") then
-        model["Meshes/Sword_03"]:Destroy()
-    elseif model:FindFirstChild("Sword_03") then
-        model.Sword_03:Destroy()
-    end
-    
-    -- Remove todos os Trails
-    for _, item in pairs(model:GetDescendants()) do
-        if item:IsA("Trail") or item.Name == "Trail" then
-            item:Destroy()
-        end
-    end
-    
-    -- Limpeza extra dos olhos
-    for _, item in pairs(model:GetDescendants()) do
-        if item.Name == "Eyes" or 
-           item.Name == "RightEye" or 
-           item.Name == "LeftEye" then
-            item:Destroy()
-        end
-    end
+
 end
 
--- Limpa o personagem do jogador quando carrega ou respawna
-if player.Character then
-    cleanModel(player.Character)
+
+
+-- === INVISÍVEL (Transparency = 1) ===
+
+makeInvisible(char:FindFirstChild("Coffin"))
+
+makeInvisible(char:FindFirstChild("Meshes/Sword_03"))
+
+makeInvisible(char:FindFirstChild("ErlkingCoffinChains"))
+
+
+
+-- 15º filho do Head
+
+local headChildren = char.Head:GetChildren()
+
+if #headChildren >= 15 then
+
+    makeInvisible(headChildren[15])
+
 end
 
-player.CharacterAdded:Connect(function(char)
-    task.wait(0.6)
-    cleanModel(char)
+
+
+-- === APAGA da cabeça ===
+
+local rightEye = char.Head:FindFirstChild("RightEye")
+
+if rightEye then 
+
+    rightEye:Destroy() 
+
+end
+
+
+
+local eyes = char.Head:FindFirstChild("Eyes")
+
+if eyes then 
+
+    eyes:Destroy() 
+
+end
+
+
+
+local attachment = char.Head:FindFirstChild("Attachment")
+
+if attachment then 
+
+    attachment:Destroy() 
+
+end
+
+
+
+-- Trail do Head principal (desativa)
+
+local headTrail = char.Head:FindFirstChild("Trail")
+
+if headTrail and headTrail:IsA("Trail") then
+
+    headTrail.Enabled = false
+
+end
+
+
+
+-- === CONFIGURAÇÕES NO COFFIN (Trail) ===
+
+local coffinTrail = char.Coffin:FindFirstChild("Attachment") and char.Coffin.Attachment:FindFirstChild("Trail")
+
+if coffinTrail and coffinTrail:IsA("Trail") then
+
+    coffinTrail.LightEmission = 1
+
+    coffinTrail.Texture = "rbxassetid://90900308048410"
+
+    coffinTrail.Lifetime = 0.4          -- Novo Lifetime
+
+end
+
+
+
+-- === CONFIGURAÇÕES NA SWORD ===
+
+local sword = char:FindFirstChild("Meshes/Sword_03")
+
+if sword then
+
+    
+
+    local swordTrail = sword:FindFirstChild("Trail")
+
+    if swordTrail and swordTrail:IsA("Trail") then
+
+        swordTrail.Texture = "rbxassetid://83009374296382"
+
+        swordTrail.Lifetime = 0.4           -- Novo Lifetime
+
+        swordTrail.Brightness = 6.534999847412109   -- Novo Brightness
+
+        -- LightEmission removido conforme solicitado
+
+    end
+
+    
+
+    -- Apaga os objetos da Sword
+
+    local swordChildren = sword:GetChildren()
+
+    if #swordChildren >= 6 then
+
+        swordChildren[6]:Destroy()
+
+    end
+
+    if #swordChildren >= 7 then
+
+        swordChildren[7]:Destroy()
+
+    end
+
+    
+
+    local beam = sword:FindFirstChild("Beam")
+
+    if beam then
+
+        beam:Destroy()
+
+    end
+
+end
+
+task.spawn(function()
+    
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    
+    if not char then return end
+    
+    local sword = char:FindFirstChild("Meshes/Sword_03", true)
+    if not sword or not sword:IsA("BasePart") then
+        warn("Sword não encontrado!")
+        return 
+    end
+
+    local size = sword.Size
+
+    -- Função com CFrame (posição + rotação)
+    local function createBeam(textureId, textureSpeed, width, brightness, zOffset, posOffset, rot)
+
+        local top = Instance.new("Attachment")
+        top.CFrame = CFrame.new(0, size.Y/4, 0) 
+            * CFrame.new(posOffset) 
+            * CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
+        top.Parent = sword
+
+        local bottom = Instance.new("Attachment")
+        bottom.CFrame = CFrame.new(0, -size.Y/2, 0) 
+            * CFrame.new(posOffset) 
+            * CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
+        bottom.Parent = sword
+
+        local beam = Instance.new("Beam")
+        beam.Attachment0 = top
+        beam.Attachment1 = bottom
+
+        beam.Texture = textureId
+        beam.TextureLength = 1.625
+        beam.TextureSpeed = textureSpeed
+
+        beam.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0,    Color3.fromRGB(0, 90, 0)),
+            ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(0, 255, 51)),
+            ColorSequenceKeypoint.new(1,    Color3.fromRGB(0, 60, 0))
+        })
+
+        beam.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.55, 0.1),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+
+        beam.Width0 = 0
+        beam.Width1 = width
+        beam.Brightness = brightness
+        beam.Segments = 12
+        beam.ZOffset = zOffset
+        beam.FaceCamera = true
+
+        beam.Parent = sword
+    end
+
+    -- 🔥 AGORA VOCÊ AJUSTA AQUI 🔥
+
+    createBeam(
+        "rbxassetid://122409206796577",
+        -0.12,
+        5.5,
+        25,
+        0.30,
+        Vector3.new(-0.5,1.5,0),      -- posição
+        Vector3.new(-40,0,-0)         -- rotação
+    )
+
+    createBeam(
+        "rbxassetid://76095545873924",
+        -0.30,
+        8.5,
+        6,
+        0.32,
+        Vector3.new(0,0.5,0),
+        Vector3.new(0,0,0)        -- girado no eixo Y
+    )
+
+    createBeam(
+        "rbxassetid://122409206796577",
+        -0.12,
+        5.5,
+        18,
+        0.35,
+        Vector3.new(0.5,1.5,0),
+        Vector3.new(40,0,0)        -- inclinado
+    )
+
 end)
 
--- Monitoramento contínuo (remove efeitos que reaparecem)
 task.spawn(function()
-    while true do
-        task.wait(0.8)
-        
-        -- Limpa personagem do jogador
-        if player.Character then
-            cleanModel(player.Character)
-        end
-        
-        -- Limpa GelatekReanimate
-        local gelatek = workspace:FindFirstChild("GelatekReanimate")
-        if gelatek then
-            cleanModel(gelatek)
-        end
-        
-        -- Limpeza extra para pedroEXEFORSAKEN
-        local pedro = workspace:FindFirstChild("pedroEXEFORSAKEN")
-        if pedro and pedro:FindFirstChild("Head") then
-            local h = pedro.Head
-            if h:FindFirstChild("RightEye") then 
-                h.RightEye:Destroy() 
+    
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    
+    if not char then return end
+    
+    -- Encontra a espada
+    local sword = char:FindFirstChild("Meshes/Sword_03", true)
+    if not sword or not sword:IsA("BasePart") then
+        warn("Sword não encontrado!")
+        return 
+    end
+
+    local size = sword.Size
+
+    -- =========================
+    -- ATTACHMENT 1 (NO TOPO DA ESPADA)
+    -- =========================
+
+    local att1 = Instance.new("Attachment")
+    att1.Name = "1"
+    att1.Position = Vector3.new(0, size.Y / 12.5, 0)   -- Exatamente no topo
+    att1.Parent = sword
+
+    -- =========================
+    -- PARTICLE EMITTER
+    -- =========================
+
+    local particle = Instance.new("ParticleEmitter")
+    particle.Name = "Particle"
+
+    particle.Enabled = true
+    particle.Rate = 3
+    particle.Lifetime = NumberRange.new(0.7, 0.7)
+    particle.Speed = NumberRange.new(0.001, 0.001)
+    particle.SpreadAngle = Vector2.new(0, 0)
+
+    particle.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 4, 0),
+        NumberSequenceKeypoint.new(1, 4, 0)
+    })
+
+    particle.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0, 0),
+        NumberSequenceKeypoint.new(0.926, 0, 0),
+        NumberSequenceKeypoint.new(1, 1, 0)
+    })
+
+    particle.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.new(0.0745, 0.8117, 0.2)),
+        ColorSequenceKeypoint.new(1, Color3.new(0.0745, 0.8117, 0.2))
+    })
+
+    particle.Texture = "rbxassetid://79345913170297"
+
+    particle.RotSpeed = NumberRange.new(0, 0)
+    particle.Rotation = NumberRange.new(90, 90)
+
+    particle.Acceleration = Vector3.new(0, 0, 0)
+    particle.Drag = 0
+
+    particle.EmissionDirection = Enum.NormalId.Left
+    particle.LockedToPart = true
+    particle.Orientation = Enum.ParticleOrientation.VelocityParallel
+
+    particle.Shape = Enum.ParticleEmitterShape.Box
+    particle.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
+    particle.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+
+    particle.Squash = NumberSequence.new(0.5)
+
+    particle.FlipbookFramerate = NumberRange.new(1, 1)
+    particle.FlipbookLayout = Enum.ParticleFlipbookLayout.Grid4x4
+    particle.FlipbookMode = Enum.ParticleFlipbookMode.OneShot
+
+    particle.ZOffset = 0
+
+    -- Coloca a partícula no Attachment 1
+    particle.Parent = att1
+
+end)
+
+
+task.spawn(function()
+    while task.wait(0.5) do
+
+        local character =
+            workspace:FindFirstChild("Galatek")
+            or workspace:FindFirstChild("GelatekReanimate")
+
+        if character then
+            local sword = character:FindFirstChild("Meshes/Sword_03", true)
+
+            if sword then
+                for _, obj in ipairs(sword:GetDescendants()) do
+                    if obj:IsA("ParticleEmitter") then
+                        obj.EmissionDirection = Enum.NormalId.Top
+                        obj.Brightness = 4
+                    end
+                end
             end
         end
+    end
+end)
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local torso = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
+
+local RunService = game:GetService("RunService")
+
+-- 🔍 procurar acessório (coffin ou ironmaiden)
+local function getTargetAttachment()
+    for _, acc in ipairs(char:GetChildren()) do
+        if acc:IsA("Accessory") then
+            if acc.Name:lower():find("coffin") or acc.Name:lower():find("iron") then
+                if acc:FindFirstChild("Handle") then
+                    return acc.Handle:FindFirstChildOfClass("Attachment")
+                end
+            end
+        end
+    end
+end
+
+-- criar attachment
+local function newAttach(name, pos)
+    local a = Instance.new("Attachment")
+    a.Name = name
+    a.Position = pos
+    a.Parent = torso
+    return a
+end
+
+-- 🟢 BASES (presas no corpo)
+local A3_base = newAttach("A3_base", Vector3.new(0, -1, -1.2)) -- cintura costas
+local A4_base = newAttach("A4_base", Vector3.new(0, 1.2, -0.6)) -- pescoço atrás
+
+-- 🟢 PONTAS (vão seguir acessório)
+local A3_tip = newAttach("A3_tip", A3_base.Position)
+local A4_tip = newAttach("A4_tip", A4_base.Position)
+
+-- função beam (corrente)
+local function createBeam(a0, a1, c0, c1)
+    local b = Instance.new("Beam")
+
+    b.Attachment0 = a0 -- preso no torso
+    b.Attachment1 = a1 -- ponta que segue
+
+    b.Texture = "rbxassetid://76095545873924"
+    b.TextureLength = 4
+    b.TextureSpeed = -0.3
+    b.TextureMode = Enum.TextureMode.Wrap
+
+    b.Width0 = 1
+    b.Width1 = 5
+
+    b.LightEmission = 1
+    b.LightInfluence = 0
+    b.Brightness = 3
+
+    b.FaceCamera = true
+    b.Enabled = true
+
+    b.Segments = 50
+    b.CurveSize0 = c0
+    b.CurveSize1 = c1
+
+    b.Transparency = NumberSequence.new(0)
+
+    -- 🟢 verde
+    b.Color = ColorSequence.new(Color3.fromRGB(0,255,0))
+
+    b.Parent = torso
+end
+
+-- 🔥 criar correntes (3 e 4)
+createBeam(A3_base, A3_tip, 0.77, -1)   -- cintura
+createBeam(A4_base, A4_tip, -0.77, 1)   -- pescoço
+
+-- 🎯 seguir acessório
+RunService.RenderStepped:Connect(function()
+    local target = getTargetAttachment()
+
+    if target then
+        -- ponta segue o acessório
+        A3_tip.WorldPosition = target.WorldPosition
+        A4_tip.WorldPosition = target.WorldPosition
+    else
+        -- fica parado
+        A3_tip.Position = A3_base.Position
+        A4_tip.Position = A4_base.Position
+    end
+end)
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local RunService = game:GetService("RunService")
+
+-- pegar accessory Default
+local function getDefault()
+    for _, acc in ipairs(char:GetChildren()) do
+        if acc:IsA("Accessory") and acc.Name == "Default" then
+            return acc:FindFirstChild("Handle")
+        end
+    end
+end
+
+local handle = getDefault()
+if not handle then return end
+
+-- criar attachment
+local function newAttach()
+    local a = Instance.new("Attachment")
+    a.Parent = handle
+    return a
+end
+
+-- criar corrente
+local function createChain(color)
+    local a0 = newAttach()
+    local a1 = newAttach()
+
+    local b = Instance.new("Beam")
+    b.Attachment0 = a0
+    b.Attachment1 = a1
+
+    b.Texture = "rbxassetid://76095545873924"
+    b.TextureLength = 4
+    b.TextureSpeed = -0.5
+
+    b.Width0 = 0.8
+    b.Width1 = 0.8
+
+    b.Brightness = 10
+    b.LightEmission = 1
+
+    b.FaceCamera = true
+    b.Enabled = true
+    b.Segments = 40
+
+    b.Transparency = NumberSequence.new(0)
+    b.Color = ColorSequence.new(color)
+
+    b.Parent = handle
+
+    return a0, a1
+end
+
+-- cores
+local green = Color3.fromRGB(0,255,0)
+local darkGreen = Color3.fromRGB(0,120,0)
+
+-- correntes
+local chains = {
+    {createChain(green),  1.5, 3},
+    {createChain(darkGreen), 0, 1.5},
+    {createChain(green), -1.5, 0.8},
+}
+
+local t = 0
+
+RunService.RenderStepped:Connect(function(dt)
+    t += dt
+
+    for i, data in ipairs(chains) do
+        local a0, a1 = unpack(data[1])
+        local y = data[2]
+        local speed = data[3]
+
+        local radius = 2
+        local angle = t * speed
+
+        local tilt = 0.3 * i
+
+        a0.Position = Vector3.new(
+            math.cos(angle) * radius,
+            y,
+            math.sin(angle) * radius + tilt
+        )
+
+        a1.Position = Vector3.new(
+            math.cos(angle + math.pi) * radius,
+            y,
+            math.sin(angle + math.pi) * radius - tilt
+        )
     end
 end)
